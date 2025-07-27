@@ -1,5 +1,7 @@
 from langchain_ollama.llms import OllamaLLM
 from langchain.prompts import ChatPromptTemplate
+from vectorseach import retriever
+import os
 
 model = OllamaLLM(model='llama3.2')
 
@@ -24,11 +26,18 @@ while True:
     print("\n-=-=-=-=-=-=-=-=-")
     question = input("Enter your question (q to quit): ")
     print("\n\n")
-    if question.tolower() == "q":
+    if question.lower() == "q":
         break
 
+    curriculum = retriever.invoke(question)
     result = chain.invoke({
-    "curriculum": [],
+    "curriculum": curriculum,
     "question": question
     })
     print(result)
+    
+    # Display sources
+    sources = set(doc.metadata['source'] for doc in curriculum)
+    
+    for source_file in sources:
+        print(f"- {os.path.basename(source_file)}")
