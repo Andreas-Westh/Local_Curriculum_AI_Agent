@@ -40,5 +40,7 @@ if add_documents:
     print("Documents added to vector store!")
 
 # Create retriever for searching
-retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+retriever = vector_store.as_retriever(
+    #search_kwargs={"k": 3}
+                                      )
 

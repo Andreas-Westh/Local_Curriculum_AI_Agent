@@ -30,14 +30,19 @@ while True:
         break
 
     curriculum = retriever.invoke(question)
-    result = chain.invoke({
-    "curriculum": curriculum,
-    "question": question
+    
+    response_stream =chain.stream({
+        "curriculum": curriculum,
+        "question": question 
     })
-    print(result)
+    
+    # printing each chunk of the response stream
+    for chunk in response_stream:
+        print(chunk, end="", flush=True)
+    
     
     # Display sources
     sources = set(doc.metadata['source'] for doc in curriculum)
     
     for source_file in sources:
-        print(f"- {os.path.basename(source_file)}")
+        print(f"\n- {os.path.basename(source_file)}")
