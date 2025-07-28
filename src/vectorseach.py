@@ -4,18 +4,25 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 import os
 
+# --- Robust Path Setup ---
+# Get the absolute path of the directory this file is in (i.e., .../src)
+SRC_DIR = os.path.dirname(os.path.abspath(__file__))
+# Construct the absolute path to the data and db directories
+DB_LOCATION = os.path.join(SRC_DIR, '..', 'data', 'chroma_db')
+DATA_DIR = os.path.join(SRC_DIR, '..', 'data')
+
+
 # Simple setup
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
-db_location = "data/chroma_db"
 
 # Check if we need to load documents
-add_documents = not os.path.exists(db_location)
+add_documents = not os.path.exists(DB_LOCATION)
 
 if add_documents:
     print("Loading PDFs from data folder...")
     
-    # Load all PDFs from data directory
-    loader = PyPDFDirectoryLoader("data/")
+    # Load all PDFs from the absolute data directory path
+    loader = PyPDFDirectoryLoader(DATA_DIR)
     documents = loader.load()
     
     # Split documents into smaller chunks
@@ -31,7 +38,7 @@ if add_documents:
 vector_store = Chroma(
     collection_name="pdf_collection",
     embedding_function=embeddings,
-    persist_directory=db_location
+    persist_directory=DB_LOCATION
 )
 
 # Add documents if this is first time
@@ -42,5 +49,5 @@ if add_documents:
 # Create retriever for searching
 retriever = vector_store.as_retriever(
     #search_kwargs={"k": 3}
-                                      )
+)
 

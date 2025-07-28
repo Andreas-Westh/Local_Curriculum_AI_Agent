@@ -1,6 +1,7 @@
 from langchain_ollama.llms import OllamaLLM
 from langchain.prompts import ChatPromptTemplate
-from vectorseach import retriever
+from src.vectorseach import retriever
+from src.spinner import start_spinner, stop_spinner
 import os
 
 model = OllamaLLM(model='llama3.2')
@@ -31,21 +32,32 @@ chain = prompt | model
 while True: 
     print("\n-=-=-=-=-=-=-=-=-")
     question = input("Enter your question (q to quit): ")
-    print("\n\n")
+    print("\n")
     if question.lower() == "q":
         break
 
+    # Start the spinner to show the AI is working.
+    start_spinner()
+    
     curriculum = retriever.invoke(question)
     
-    response_stream =chain.stream({
+    response_stream = chain.stream({
         "curriculum": curriculum,
         "question": question 
     })
     
-    # printing each chunk of the response stream
+    # This flag helps us know when to stop the spinner.
+    first_chunk = True
     for chunk in response_stream:
+        # As soon as we get the first piece of the answer, stop the animation.
+        if first_chunk:
+            stop_spinner()
+            first_chunk = False
+        
         print(chunk, end="", flush=True)
     
+    # Just in case the spinner is still running (e.g., if there's no response).
+    stop_spinner()
     
     # Display sources
     print("\n\n===============")
