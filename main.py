@@ -48,7 +48,19 @@ while True:
     
     
     # Display sources
-    sources = set(doc.metadata['source'] for doc in curriculum)
+    print("\n\n===============")
+    print("Sources:")
     
-    for source_file in sources:
-        print(f"\n- {os.path.basename(source_file)}")
+    unique_sources = set()
+    for doc in curriculum:
+        source_file = os.path.basename(doc.metadata['source'])
+        page_number = doc.metadata['page']
+        if page_number > 0:
+            unique_sources.add(f"{source_file} (Page {page_number})")
+        else:
+            unique_sources.add(f"{source_file}")
+    
+    for source_info in unique_sources:
+        print(f"\n- {source_info}")
+    
+    print("===============\n")
