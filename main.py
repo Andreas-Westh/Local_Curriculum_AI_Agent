@@ -66,13 +66,17 @@ while True:
     unique_sources = set()
     for doc in curriculum:
         source_file = os.path.basename(doc.metadata['source'])
-        page_number = doc.metadata['page']
-        if page_number > 0:
-            unique_sources.add(f"{source_file} (Page {page_number})")
+        
+        if source_file == 'schedule.txt':
+            unique_sources.add(f"{source_file} (Course schedule)")
         else:
-            unique_sources.add(f"{source_file}")
+            page_number = doc.metadata.get('page', -1)
+            if page_number >= 0:
+                unique_sources.add(f"{source_file} (Page {page_number + 1})")
+            else:
+                unique_sources.add(f"{source_file}")
     
-    for source_info in unique_sources:
+    for source_info in sorted(unique_sources):
         print(f"\n- {source_info}")
     
     print("===============\n")
